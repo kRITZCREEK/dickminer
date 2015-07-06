@@ -9,16 +9,6 @@ import Text.Read
 import Control.Applicative
 import System.Locale (defaultTimeLocale)
 
-logEntry :: [String]
-logEntry =
-  [
-    "07/06/2015 08:46:41 am 37.201.171.211 /",
-    "Country: (Unknown Country?) (XX)",
-    "City: (Unknown City?)",
-    "Latitude:",
-    "Longitude:",
-    "IP: 37.201.171.211"
-  ]
 
 parseLogEntry :: [String] -> Maybe Pagehit
 parseLogEntry [dateIPRoute, country, city, lat, long, ip] =
@@ -36,9 +26,10 @@ splitDateIPRoute :: String -> (String, String, String)
 splitDateIPRoute s = (dateString, ipString, route)
   where splitted = words s
         dateString = unwords (take 3 splitted)
-        (ipString, route) = if length splitted <= 4
-                   then ("", "")
-                   else (splitted !! 3, splitted !! 4)
+        (ipString, route) =
+          if length splitted <= 4
+          then ("", "")
+          else (splitted !! 3, splitted !! 4)
 
 
 parseDateString :: String -> Maybe UTCTime
