@@ -1,11 +1,11 @@
 module Dickmine.ParseSpec where
 
-import Test.Hspec
+import           Test.Hspec
 
-import Dickmine.Parse
-import Dickmine.Types
-import Data.Time
-import System.Locale
+import           Data.Time
+import           Dickmine.Parse
+import           Dickmine.Types
+import           System.Locale
 
 logEntry :: [String]
 logEntry =

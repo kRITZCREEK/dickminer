@@ -2,9 +2,9 @@
 
 module Dickmine.Types where
 
-import Data.Time (UTCTime)
-import Data.Aeson
-import GHC.Generics
+import           Data.Aeson
+import           Data.Time    (UTCTime)
+import           GHC.Generics
 
 data Pagehit =
   Pagehit {

@@ -1,13 +1,13 @@
 {-# LANGUAGE PatternGuards #-}
 module Dickmine.Parse where
 
-import Dickmine.Types
-import Data.Time
-import Data.List
-import Data.Char
-import Text.Read
-import Control.Applicative
-import System.Locale (defaultTimeLocale)
+import           Control.Applicative
+import           Data.Char
+import           Data.List
+import           Data.Time
+import           Dickmine.Types
+import           System.Locale       (defaultTimeLocale)
+import           Text.Read
 
 
 parseLogEntry :: [String] -> Maybe Pagehit
@@ -30,7 +30,6 @@ splitDateIPRoute s = (dateString, ipString, route)
           if length splitted <= 4
           then ("", "")
           else (splitted !! 3, splitted !! 4)
-
 
 parseDateString :: String -> Maybe UTCTime
 parseDateString = parseTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p"
