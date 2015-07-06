@@ -1,0 +1,6 @@
+* DickMiner
+** Needed Data:
+Count number of Rick-Rolled people + page + time + location
+command line utility
+output format JSON
+
