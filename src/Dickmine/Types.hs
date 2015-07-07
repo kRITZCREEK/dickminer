@@ -10,6 +10,8 @@ data Pagehit =
   Pagehit {
     ip        :: String,
     page      :: String,
+    city      :: String,
+    country   :: String,
     latitude  :: Double,
     longitude :: Double,
     timestamp :: UTCTime

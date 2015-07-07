@@ -61,10 +61,12 @@ spec = do
       parseLogEntry [] `shouldBe` Nothing
     it "parses a correct Log Entry" $ do
       parseLogEntry logEntry `shouldBe`
-        Just (Pagehit {
+        Just Pagehit {
                   ip = "37.201.171.211",
                   page = "/",
+                  country = "(Unknown Country?) (XX)",
+                  city = "(Unknown City?)",
                   latitude = 0,
                   longitude = 0,
                   timestamp = readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/06/2015 08:46:41 AM"
-                  })
+                  }

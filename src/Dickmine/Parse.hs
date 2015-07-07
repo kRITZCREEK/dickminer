@@ -12,7 +12,14 @@ import           Text.Read
 
 parseLogEntry :: [String] -> Maybe Pagehit
 parseLogEntry [dateIPRoute, country, city, lat, long, ip] =
-  Pagehit <$> Just ip' <*> Just page' <*> lat' <*> long' <*> time'
+  Pagehit <$>
+   Just ip' <*>
+   Just page' <*>
+   city' <*>
+   country' <*>
+   lat' <*>
+   long' <*>
+   time'
   where
     (date, ip', page') = splitDateIPRoute dateIPRoute
     country' = parseCountry country
