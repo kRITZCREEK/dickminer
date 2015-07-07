@@ -1,8 +1,15 @@
 module Main where
 
+import           Data.Aeson
+import           Data.List          (intercalate, nub, replicate)
+import           Data.Maybe         (mapMaybe)
 import           Dickmine
+import           Dickmine.Types
 import           System.Environment
 import           System.IO
+
+separator :: IO ()
+separator = putStrLn (replicate 25 '=')
 
 readLogFile :: FilePath  -> IO [String]
 readLogFile path = fmap lines (readFile path)
@@ -18,5 +25,10 @@ main :: IO ()
 main = do
   args <- getArgs
   logFiles <- mapM readLogFile args
-  let entries = concatMap splitIntoEntries logFiles
-  print (map parseLogEntry entries)
+  let entries = map parseLogEntry $ concatMap splitIntoEntries logFiles
+  putStrLn "Raw Data:"
+  putStrLn $ show entries
+  separator
+  putStrLn $ "There were: " ++ show (length entries) ++ " victims."
+  separator
+  putStrLn $ "We hit these cities: " ++ show (nub $ mapMaybe (fmap city) entries) ++ "."
