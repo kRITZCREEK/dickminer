@@ -1,32 +1,45 @@
 module Main where
 
-import           Data.List          (nub)
-import           Data.Maybe         (mapMaybe)
+import           Control.Applicative
+import           Control.Monad                    (forever)
+import           Control.Monad.Trans.State.Strict
+import           Data.List                        (nub)
+import           Data.Maybe                       (mapMaybe)
 import           Dickmine
 import           Dickmine.Types
+import           Pipes
+import qualified Pipes.Prelude                    as P
 import           System.Environment
+import           System.IO
 
 separator :: IO ()
 separator = putStrLn (replicate 25 '=')
 
-readLogFile :: FilePath  -> IO [String]
-readLogFile path = fmap lines (readFile path)
+readLogFile' :: Handle -> Producer String IO ()
+readLogFile' = P.fromHandle
 
-splitIntoEntries :: [String] -> [[String]]
-splitIntoEntries file =
-  reverse $ splitIntoEntries' [] $ filter (/= "") file
-  where splitIntoEntries' acc ls
-          | length ls >= 6 = splitIntoEntries' (take 6 ls : acc) (drop 6 ls)
-          | otherwise      = acc
+splitIntoEntries :: Pipe String [String] IO ()
+splitIntoEntries = evalStateT (forever splitIntoEntries') ("", [])
+
+splitIntoEntries' :: StateT (String, [String]) (Pipe String [String] IO) ()
+splitIntoEntries' = do
+  nextVal <- lift await
+  (lastVal, acc) <- get
+  if nextVal == ""
+    then if lastVal == ""
+         then put ("whatever", []) >> lift (yield acc)
+         else put ("", acc)
+    else put (nextVal, acc ++ [nextVal])
 
 main :: IO ()
 main = do
   args <- getArgs
-  logFiles <- mapM readLogFile args
-  let entries = map parseLogEntry $ concatMap splitIntoEntries logFiles
+  hlogFiles <- mapM (`openFile` ReadMode) args
+  let producers = map readLogFile' hlogFiles
+  entries <- P.toListM $ head producers >-> splitIntoEntries
+  let pageHits = map parseLogEntry entries
   putStrLn "Raw Data:"
-  print entries
   separator
-  putStrLn $ "There were: " ++ show (length entries) ++ " victims."
+  putStrLn $ "There were: " ++ show (length pageHits) ++ " victims."
   separator
-  putStrLn $ "We hit these cities: " ++ show (nub $ mapMaybe (fmap city) entries) ++ "."
+  putStrLn $ "We hit these cities: " ++ show (nub $ mapMaybe (fmap city) pageHits) ++ "."
