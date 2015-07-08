@@ -1,12 +1,10 @@
 module Main where
 
-import           Data.Aeson
-import           Data.List          (intercalate, nub, replicate)
+import           Data.List          (nub)
 import           Data.Maybe         (mapMaybe)
 import           Dickmine
 import           Dickmine.Types
 import           System.Environment
-import           System.IO
 
 separator :: IO ()
 separator = putStrLn (replicate 25 '=')
@@ -27,7 +25,7 @@ main = do
   logFiles <- mapM readLogFile args
   let entries = map parseLogEntry $ concatMap splitIntoEntries logFiles
   putStrLn "Raw Data:"
-  putStrLn $ show entries
+  print entries
   separator
   putStrLn $ "There were: " ++ show (length entries) ++ " victims."
   separator
