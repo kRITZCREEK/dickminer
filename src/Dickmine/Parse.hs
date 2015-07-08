@@ -11,22 +11,23 @@ import           Text.Read
 
 
 parseLogEntry :: [String] -> Maybe Pagehit
-parseLogEntry [dateIPRoute, country, city, lat, long, ip] =
+parseLogEntry [rrType, date, url, country, city, lat, long, ip] =
   Pagehit <$>
-   Just ip' <*>
-   Just page' <*>
+   ip' <*>
+   url' <*>
    city' <*>
    country' <*>
    lat' <*>
    long' <*>
-   time'
+   date'
   where
-    (date, ip', page') = splitDateIPRoute dateIPRoute
+    ip' = parseIP ip
+    url' = parseURL url
     country' = parseCountry country
     city' = parseCity city
     lat' = parseLatitude lat
     long' = parseLongitude long
-    time' = parseDateString date
+    date' = parseDateString date
 parseLogEntry _ = Nothing
 
 splitDateIPRoute :: String -> (String, String, String)
@@ -39,13 +40,19 @@ splitDateIPRoute s = (dateString, ipString, route)
           else (splitted !! 3, splitted !! 4)
 
 parseDateString :: String -> Maybe UTCTime
-parseDateString = parseTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p"
+parseDateString ds = do
+  dateString <- parseWithPrefix "Date: " ds
+  parseTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" dateString
 
 parseIP :: String -> Maybe String
-parseIP s =
-  if all (\c -> isDigit c || c == '.') s
-  then Just s
-  else Nothing
+parseIP s = do
+  ipString <- parseWithPrefix "IP: " s
+  if all (\c -> isDigit c || c == '.') ipString
+    then Just ipString
+    else Nothing
+
+parseURL :: String -> Maybe String
+parseURL = parseWithPrefix "URL: "
 
 parseCountry :: String -> Maybe String
 parseCountry = parseWithPrefix "Country: "
@@ -54,11 +61,9 @@ parseCity :: String -> Maybe String
 parseCity = parseWithPrefix "City: "
 
 parseLatitude :: String -> Maybe Double
-parseLatitude "Latitude:" = Just 0
 parseLatitude s = readMaybe =<< parseWithPrefix "Latitude: " s
 
 parseLongitude :: String -> Maybe Double
-parseLongitude "Longitude:" = Just 0
 parseLongitude s = readMaybe =<< parseWithPrefix "Longitude: " s
 
 parseWithPrefix :: String -> String -> Maybe String

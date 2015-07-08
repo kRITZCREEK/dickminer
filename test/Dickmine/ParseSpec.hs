@@ -7,8 +7,8 @@ import           Dickmine.Parse
 import           Dickmine.Types
 import           System.Locale
 
-logEntry :: [String]
-logEntry =
+incorrectLogEntry :: [String]
+incorrectLogEntry =
   [
     "07/06/2015 08:46:41 am 37.201.171.211 /",
     "Country: (Unknown Country?) (XX)",
@@ -16,6 +16,20 @@ logEntry =
     "Latitude:",
     "Longitude:",
     "IP: 37.201.171.211"
+  ]
+
+
+correctLogEntry :: [String]
+correctLogEntry =
+  [
+    "Rick Roll Type: Docs",
+    "Date: 07/08/2015 04:31:56 am",
+    "URL: /api/docs/",
+    "Country: IRELAND (IE)",
+    "City: Dublin",
+    "Latitude: 53.3333",
+    "Longitude: -6.25",
+    "IP: 137.43.28.224"
   ]
 
 spec = do
@@ -27,13 +41,13 @@ spec = do
     it "fails to parse a malformed date" $ do
       parseDateString "0213asdjk213" `shouldBe` Nothing
     it "parses a dateString" $ do
-      parseDateString "07/06/2015 08:46:41 am" `shouldBe` Just (readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/06/2015 08:46:41 AM")
+      parseDateString "Date: 07/06/2015 08:46:41 am" `shouldBe` Just (readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/06/2015 08:46:41 AM")
 
   describe "parse IP" $ do
     it "fails to parse a malformed IP" $ do
       parseIP "asdh" `shouldBe` Nothing
     it "parses a correct IP" $ do
-      parseIP "37.201.171.211" `shouldBe` Just "37.201.171.211"
+      parseIP "IP: 37.201.171.211" `shouldBe` Just "37.201.171.211"
 
   describe "parse Country" $ do
     it "fails to parse a malformed country String" $ do
@@ -51,22 +65,24 @@ spec = do
     it "failes to parse a malformed Latitude" $ do
       parseLatitude "Counasdmh:asdkj" `shouldBe` Nothing
       parseLatitude "Latitude: asd" `shouldBe` Nothing
-
+      parseLatitude "Latitude:" `shouldBe` Nothing
     it "parses a Latitude" $ do
-      parseLatitude "Latitude:" `shouldBe` Just 0
       parseLatitude "Latitude: 42.12" `shouldBe` Just 42.12
 
   describe "parseLogEntry" $ do
     it "fails to parse on empty Input" $ do
       parseLogEntry [] `shouldBe` Nothing
+    it "fails to parse an incorrect Log Entry" $ do
+      parseLogEntry incorrectLogEntry `shouldBe` Nothing
+
     it "parses a correct Log Entry" $ do
-      parseLogEntry logEntry `shouldBe`
+      parseLogEntry correctLogEntry `shouldBe`
         Just Pagehit {
-                  ip = "37.201.171.211",
-                  page = "/",
-                  country = "(Unknown Country?) (XX)",
-                  city = "(Unknown City?)",
-                  latitude = 0,
-                  longitude = 0,
-                  timestamp = readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/06/2015 08:46:41 AM"
+                  ip = "137.43.28.224",
+                  page = "/api/docs/",
+                  country = "IRELAND (IE)",
+                  city = "Dublin",
+                  latitude = 53.3333,
+                  longitude = -6.25,
+                  timestamp = readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/08/2015 04:31:56 am"
                   }
