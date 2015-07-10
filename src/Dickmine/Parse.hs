@@ -6,29 +6,26 @@ import           Data.Char
 import           Data.List
 import           Data.Time
 import           Dickmine.Types
+import           Pipes
+import qualified Pipes.Prelude       as P
 import           System.Locale       (defaultTimeLocale)
 import           Text.Read
 
-
 parseLogEntry :: [String] -> Maybe Pagehit
 parseLogEntry [rrType, date, url, country, city, lat, long, ip] =
-  Pagehit <$>
-   ip' <*>
-   url' <*>
-   city' <*>
-   country' <*>
-   lat' <*>
-   long' <*>
-   date'
-  where
-    ip' = parseIP ip
-    url' = parseURL url
-    country' = parseCountry country
-    city' = parseCity city
-    lat' = parseLatitude lat
-    long' = parseLongitude long
-    date' = parseDateString date
+  Pagehit               <$>
+   parseIP ip           <*>
+   parseURL url         <*>
+   parseCity city       <*>
+   parseCountry country <*>
+   parseLatitude lat    <*>
+   parseLongitude long  <*>
+   parseDateString date <*>
+   parseRrType rrType
 parseLogEntry _ = Nothing
+
+parseLogEntries :: (Monad m) => Pipe [String] (Maybe Pagehit) m ()
+parseLogEntries = P.map parseLogEntry
 
 splitDateIPRoute :: String -> (String, String, String)
 splitDateIPRoute s = (dateString, ipString, route)
@@ -38,6 +35,9 @@ splitDateIPRoute s = (dateString, ipString, route)
           if length splitted <= 4
           then ("", "")
           else (splitted !! 3, splitted !! 4)
+
+parseRrType :: String -> Maybe String
+parseRrType = parseWithPrefix "Rick Roll Type: "
 
 parseDateString :: String -> Maybe UTCTime
 parseDateString ds = do
