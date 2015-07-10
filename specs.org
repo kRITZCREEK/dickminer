@@ -19,3 +19,10 @@ CLOCK: [2015-07-10 Fr 17:58]--[2015-07-10 Fr 18:22] =>  0:24
 *** DONE refactor the file Input into it's own module
 CLOSED: [2015-07-09 Do 22:23]
 CLOCK: [2015-07-09 Do 22:11]--[2015-07-09 Do 22:23] =>  0:12
+*** TODO Write Test for the IO functionality
+CLOCK: [2015-07-11 Sa 01:25]--[2015-07-11 Sa 01:41] =>  0:16
+** Serve a RESTApi
+*** DONE Set Up dependencies (Hello Universe)
+CLOSED: [2015-07-11 Sa 01:46]
+CLOCK: [2015-07-11 Sa 01:41]--[2015-07-11 Sa 01:46] =>  0:05
+
