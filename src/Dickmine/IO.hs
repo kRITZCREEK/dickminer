@@ -7,10 +7,13 @@ import qualified Pipes.Prelude                    as P
 import           System.IO                        (Handle)
 
 separator :: IO ()
-separator = putStrLn (replicate 25 '=')
+separator = putStrLn $ "8" ++ replicate 25 '=' ++ "D"
 
 readLogFile' :: Handle -> Producer String IO ()
 readLogFile' = P.fromHandle
+
+concatLogFiles :: [Handle] -> Producer String IO ()
+concatLogFiles = sequence_ . fmap readLogFile'
 
 splitIntoEntries :: Pipe String [String] IO ()
 splitIntoEntries = evalStateT (forever splitIntoEntries') ("", [])

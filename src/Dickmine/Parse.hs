@@ -4,6 +4,7 @@ module Dickmine.Parse where
 import           Control.Applicative
 import           Data.Char
 import           Data.List
+import           Data.Maybe          (isJust)
 import           Data.Time
 import           Dickmine.Types
 import           Pipes
@@ -24,8 +25,8 @@ parseLogEntry [rrType, date, url, country, city, lat, long, ip] =
    parseRrType rrType
 parseLogEntry _ = Nothing
 
-parseLogEntries :: (Monad m) => Pipe [String] (Maybe Pagehit) m ()
-parseLogEntries = P.map parseLogEntry
+parseLogEntries :: (Monad m) => Pipe [String] Pagehit m ()
+parseLogEntries = P.map parseLogEntry >-> P.filter isJust >-> P.map (\(Just x) -> x)
 
 splitDateIPRoute :: String -> (String, String, String)
 splitDateIPRoute s = (dateString, ipString, route)
