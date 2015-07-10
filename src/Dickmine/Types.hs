@@ -14,7 +14,8 @@ data Pagehit =
     country   :: String,
     latitude  :: Double,
     longitude :: Double,
-    timestamp :: UTCTime
+    timestamp :: UTCTime,
+    rrType    :: String
     } deriving(Show, Eq, Generic)
 
 instance ToJSON Pagehit

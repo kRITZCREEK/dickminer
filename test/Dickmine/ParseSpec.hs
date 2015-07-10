@@ -84,5 +84,7 @@ spec = do
                   city = "Dublin",
                   latitude = 53.3333,
                   longitude = -6.25,
-                  timestamp = readTime defaultTimeLocale "%m/%d/%Y %I:%M:%S %p" "07/08/2015 04:31:56 am"
+                  timestamp = readTime defaultTimeLocale
+                              "%m/%d/%Y %I:%M:%S %p" "07/08/2015 04:31:56 am",
+                  rrType = "Docs"
                   }
