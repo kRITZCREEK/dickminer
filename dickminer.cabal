@@ -18,10 +18,14 @@ library
   exposed-modules:     Dickmine
                      , Dickmine.Types
                      , Dickmine.Parse
+                     , Dickmine.IO
+                     , Dickmine.Query
   build-depends:       base >= 4.7 && < 5
                      , time
                      , old-locale
                      , aeson
+                     , transformers
+                     , pipes
   default-language:    Haskell2010
 
 executable dickminer-exe
@@ -32,7 +36,6 @@ executable dickminer-exe
                      , dickminer
                      , aeson
                      , pipes
-                     , transformers
   default-language:    Haskell2010
 
 test-suite dickminer-test
