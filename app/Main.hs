@@ -1,5 +1,6 @@
 module Main where
 
+import           Data.List          (nub)
 import           Dickmine
 import           Dickmine.IO
 import qualified Dickmine.Parse     as DP
@@ -23,7 +24,7 @@ main = do
           "all" -> P.map show
   hlogFiles <- mapM (`openFile` ReadMode) args
   entries <- P.toListM $
-             concatLogFiles hlogFiles >-> splitIntoEntries >-> DP.parseLogEntries >-> query'
+             concatLogFiles hlogFiles >-> splitIntoEntries >-> DP.parseLogEntries' >-> query'
 
   separator
   putStrLn "Your query result:"
@@ -31,3 +32,6 @@ main = do
   separator
   putStrLn $ "There were: " ++ show (length entries) ++ " hits."
   separator
+  putStrLn "These were the unique hits:"
+  separator
+  print (nub entries)

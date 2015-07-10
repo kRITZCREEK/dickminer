@@ -25,8 +25,33 @@ parseLogEntry [rrType, date, url, country, city, lat, long, ip] =
    parseRrType rrType
 parseLogEntry _ = Nothing
 
+parseOldLogEntry :: [String] -> Maybe Pagehit
+parseOldLogEntry [dateIpRoute, country, city, lat, long, ip] =
+  Pagehit                <$>
+    parseIP ip           <*>
+    Just url             <*>
+    parseCity city       <*>
+    parseCountry country <*>
+    parseLatitude lat    <*>
+    parseLongitude long  <*>
+    parseDateString ("Date: " ++ dateString) <*>
+    Just ""
+  where
+    (dateString, url, _) = splitDateIPRoute dateIpRoute
+parseOldLogEntry _ = Nothing
+
+parseLogEntry' x = case parseOldLogEntry x of
+  Just l -> Just l
+  Nothing -> parseLogEntry x
+
 parseLogEntries :: (Monad m) => Pipe [String] Pagehit m ()
 parseLogEntries = P.map parseLogEntry >-> P.filter isJust >-> P.map (\(Just x) -> x)
+
+parseOldLogEntries :: (Monad m) => Pipe [String] Pagehit m ()
+parseOldLogEntries = P.map parseOldLogEntry >-> P.filter isJust >-> P.map (\(Just x) -> x)
+
+parseLogEntries' :: (Monad m) => Pipe [String] Pagehit m ()
+parseLogEntries' = P.map parseLogEntry' >-> P.filter isJust >-> P.map (\(Just x) -> x)
 
 splitDateIPRoute :: String -> (String, String, String)
 splitDateIPRoute s = (dateString, ipString, route)
