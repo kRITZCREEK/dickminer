@@ -65,7 +65,8 @@ main = do
       json $ transformEntries pluckCountry
     get "/url" $
       json $ transformEntries pluckPage
-    get "/world" $
+    get "/world" $ do
+      addHeader "Access-Control-Allow-Origin" "*"
       json $ P.toList $ each entries >-> pluckWorldPoints
     get "/:word" $ do
       beam <- param "word"
