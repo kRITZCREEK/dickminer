@@ -65,6 +65,8 @@ main = do
       json $ transformEntries pluckCountry
     get "/url" $
       json $ transformEntries pluckPage
+    get "/world" $
+      json $ P.toList $ each entries >-> pluckWorldPoints
     get "/:word" $ do
       beam <- param "word"
       redirect "http://api.asciidick.com/api/docs"
