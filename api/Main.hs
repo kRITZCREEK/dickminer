@@ -2,7 +2,7 @@
 
 module Main where
 
-import           Data.List                            (group, nub)
+import           Data.List                            (group, nub, sort)
 import           Data.Monoid                          (mconcat)
 import           Data.Time
 import           Dickmine.IO
@@ -55,12 +55,12 @@ main = do
   entries <- P.toListM $ concatLogFiles hlogFiles >->
              splitIntoEntries >-> DP.parseLogEntries'
   let transformEntries p =
-        let grouped =  group $ P.toList $ each entries >-> p
+        let grouped =  group $ sort $ P.toList $ each entries >-> p
         in map (\xs -> (head xs, length xs)) grouped
   scotty 3000 $ do
     middleware logStdoutDev
     get "/city" $
-      json $ transformEntries pluckCity
+      json $ transformEntries pluckCityCoord
     get "/country" $
       json $ transformEntries pluckCountry
     get "/url" $
