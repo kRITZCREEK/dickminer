@@ -48,6 +48,7 @@ executable dickminer-api
                      , pipes
                      , scotty
                      , time
+                     , wai-extra
   default-language:    Haskell2010
 
 test-suite dickminer-test
