@@ -1,11 +1,9 @@
 module Main where
 
 import           Data.List          (nub)
-import           Dickmine
 import           Dickmine.IO
 import qualified Dickmine.Parse     as DP
 import           Dickmine.Query
-import           Dickmine.Types
 import           Pipes
 import qualified Pipes.Prelude      as P
 import           System.Environment
@@ -21,6 +19,7 @@ main = do
           "country" -> pluckCountry
           "page" -> pluckPage
           "all" -> P.map show
+          _ -> P.map show
   args <- getArgs
   hlogFiles <- mapM (`openFile` ReadMode) args
   entries <- P.toListM $
