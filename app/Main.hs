@@ -13,7 +13,6 @@ import           System.IO
 
 main :: IO ()
 main = do
-  args <- getArgs
   putStrLn "What information do you want to see? (city, country, page, all)"
   query <- getLine
   let query' =
@@ -22,6 +21,7 @@ main = do
           "country" -> pluckCountry
           "page" -> pluckPage
           "all" -> P.map show
+  args <- getArgs
   hlogFiles <- mapM (`openFile` ReadMode) args
   entries <- P.toListM $
              concatLogFiles hlogFiles >-> splitIntoEntries >-> DP.parseLogEntries' >-> query'
