@@ -16,47 +16,18 @@ import           System.Environment
 import           System.IO
 import           Web.Scotty
 
-data Query = Query Filter Aggregation
+-- entries = do
+--   hFiles <- mapM (`openFile` ReadMode) ["../data/traffic.log"]
+--   P.toListM $ concatLogFiles hFiles >->
+--     splitIntoEntries >-> DP.parseLogEntries'
 
-data Filter = City String
-            | Country String
-            | Url String
-            | Before UTCTime
-            | After UTCTime
-
-data Aggregation = Length
-                 | JSON
-
-data QueryResult a = Raw String
-                   | Encoded a
-                     deriving(Show)
-
-queryPagehits :: Query -> [Pagehit] -> QueryResult [Pagehit]
-queryPagehits (Query f a) ps = aggregate a $ filter' f ps
-  where
-    filter' (City s) = filter ((==) s . city)
-    filter' (Country s) = filter ((==) s . country)
-    filter' (Url s) = filter ((==) s . page)
-    filter' (Before t) = filter ((<) t . timestamp)
-    filter' (After t) = filter ((>=) t . timestamp)
-
-    aggregate Length = Raw . show . length
-    aggregate JSON = Encoded . nub
-
-entries = do
-  hFiles <- mapM (`openFile` ReadMode) ["../data/traffic.log"]
-  P.toListM $ concatLogFiles hFiles >->
-    splitIntoEntries >-> DP.parseLogEntries'
-
-
+main :: IO ()
 main = do
-  args <- getArgs
-  hlogFiles <- mapM (`openFile` ReadMode) args
+  paths <- getArgs
+  hlogFiles <- mapM (`openFile` ReadMode) paths
   entries <- P.toListM $ concatLogFiles hlogFiles >->
              splitIntoEntries >-> DP.parseLogEntries'
-  let transformEntries p =
-        let grouped =  group $ sort $ P.toList $ each entries >-> p
-        in map (\xs -> (head xs, length xs)) grouped
+  let transformEntries p = groupCount $ P.toList $ each entries >-> p
   scotty 3000 $ do
     middleware logStdoutDev
     get "/city" $
