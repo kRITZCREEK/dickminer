@@ -8,6 +8,7 @@ import           Data.Time
 import           Dickmine.IO
 import qualified Dickmine.Parse                       as DP
 import           Dickmine.Query
+import           Dickmine.Serialize
 import           Dickmine.Types
 import           Network.Wai.Middleware.RequestLogger
 import           Pipes
@@ -30,6 +31,8 @@ main = do
   let transformEntries p = groupCount $ P.toList $ each entries >-> p
   scotty 3000 $ do
     middleware logStdoutDev
+    get "/all" $
+      json $ P.toList $ each entries-- >-> serializePagehits
     get "/city" $
       json $ transformEntries pluckCityCoord
     get "/country" $
