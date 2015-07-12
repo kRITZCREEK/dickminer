@@ -1,13 +1,12 @@
 module Main where
 
 import           Data.List          (nub)
+import           Dickmine           (parseFiles)
 import           Dickmine.IO
-import qualified Dickmine.Parse     as DP
 import           Dickmine.Query
 import           Pipes
 import qualified Pipes.Prelude      as P
 import           System.Environment
-import           System.IO
 
 main :: IO ()
 main = do
@@ -20,10 +19,8 @@ main = do
           "page" -> pluckPage
           "all" -> P.map show
           _ -> P.map show
-  args <- getArgs
-  hlogFiles <- mapM (`openFile` ReadMode) args
-  entries <- P.toListM $
-             concatLogFiles hlogFiles >-> splitIntoEntries >-> DP.parseLogEntries' >-> query'
+  parsed <- parseFiles =<< getArgs
+  entries <- P.toListM $ parsed >-> query'
 
   separator
   putStrLn "Your query result:"
