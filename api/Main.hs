@@ -5,6 +5,7 @@ module Main where
 import           Data.List                            (group, nub, sort)
 import           Data.Monoid                          (mconcat)
 import           Data.Time
+import           Dickmine                             (parseFiles)
 import           Dickmine.IO
 import qualified Dickmine.Parse                       as DP
 import           Dickmine.Query
@@ -17,22 +18,15 @@ import           System.Environment
 import           System.IO
 import           Web.Scotty
 
--- entries = do
---   hFiles <- mapM (`openFile` ReadMode) ["../data/traffic.log"]
---   P.toListM $ concatLogFiles hFiles >->
---     splitIntoEntries >-> DP.parseLogEntries'
-
 main :: IO ()
 main = do
   paths <- getArgs
-  hlogFiles <- mapM (`openFile` ReadMode) paths
-  entries <- P.toListM $ concatLogFiles hlogFiles >->
-             splitIntoEntries >-> DP.parseLogEntries'
+  entries <- P.toListM =<< parseFiles paths
   let transformEntries p = groupCount $ P.toList $ each entries >-> p
   scotty 3000 $ do
     middleware logStdoutDev
     get "/all" $
-      json $ P.toList $ each entries-- >-> serializePagehits
+      json $ entries-- >-> serializePagehits
     get "/city" $
       json $ transformEntries pluckCityCoord
     get "/country" $

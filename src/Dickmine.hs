@@ -1,6 +1,7 @@
 module Dickmine
     ( parseLogEntry
     , parseLogEntries
+    , parseFiles
     ) where
 
 import           Dickmine.IO
